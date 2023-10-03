@@ -1,27 +1,34 @@
 import express from 'express';
 import axios from 'axios';
-
+import cors from 'cors';
 
 const index = express();
 const port = process.env.PORT || 3000;
 
-const flexibeeConfig = axios.create({
-  auth: {
-    host: 'https://demo.flexibee.eu',
-    firma: 'demo',
-    username: 'winstrom',
-    password: 'winstrom'
-  }
-});
+const config = {
+  host: 'https://demo.flexibee.eu',
+  firma: 'demo',
+  username: 'winstrom',
+  password: 'winstrom'
+};
 
-index.get('/api/flexibee-json', async (req, res) => {
+index.use(
+
+  cors({
+    origin: 'http://localhost:5173', 
+    methods: 'GET', 
+  })
+);
+
+index.get('/', async (req, res) => {
+
   try {
-    const flexibeeURL = `${flexibeeConfig.host}/c/${flexibeeConfig.firma}/faktura-vydana.json`;
+    const flexibeeURL = `${config.host}/c/${config.firma}/faktura-vydana.json?detail=full`;
 
     const response = await axios.get(flexibeeURL, {
       auth: {
-        username: flexibeeConfig.username,
-        password: flexibeeConfig.password,
+        username: config.username,
+        password: config.password,
       },
     });
 

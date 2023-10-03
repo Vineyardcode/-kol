@@ -13,25 +13,43 @@ const config = {
 };
 
 index.use(
-
   cors({
-    origin: 'http://localhost:5173', 
-    methods: 'GET', 
+    origin: 'http://localhost:5173',
+    methods: 'GET',
   })
 );
 
-index.get('/', async (req, res) => {
-
+index.get('/download/:id.pdf', async (req, res) => {
   try {
-    const flexibeeURL = `${config.host}/c/${config.firma}/faktura-vydana.json?detail=full`;
+    const itemId = req.params.id;
+    const url = `${config.host}/c/${config.firma}/faktura-vydana/${itemId}.pdf`;
+    const response = await axios.get(url, {
+      auth: {
+        username: config.username,
+        password: config.password,
+      },
+      responseType: 'arraybuffer',
+    });
 
-    const response = await axios.get(flexibeeURL, {
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="invoice-${itemId}.pdf"`);
+    res.send(response.data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error generating data.' });
+  }
+});
+
+index.get('/', async (req, res) => {
+  try {
+    const searchQuery = req.query.search || '';
+    const url = `${config.host}/c/${config.firma}/faktura-vydana.json?detail=full&start=0&q=${searchQuery}`;
+    const response = await axios.get(url, {
       auth: {
         username: config.username,
         password: config.password,
       },
     });
-
     const jsonData = response.data;
     res.json(jsonData);
   } catch (error) {

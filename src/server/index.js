@@ -21,9 +21,7 @@ index.use(
 
 index.get('/download/:id.pdf', async (req, res) => {
   try {
-    const itemId = req.params.id;
-    const url = `${config.host}/c/${config.firma}/faktura-vydana/${itemId}.pdf`;
-    const response = await axios.get(url, {
+    const response = await axios.get(`${config.host}/c/${config.firma}/faktura-vydana/${req.params.id}.pdf`, {
       auth: {
         username: config.username,
         password: config.password,
@@ -32,7 +30,7 @@ index.get('/download/:id.pdf', async (req, res) => {
     });
 
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename="invoice-${itemId}.pdf"`);
+    res.setHeader('Content-Disposition', `attachment; filename="invoice-${req.params.id}.pdf"`);
     res.send(response.data);
   } catch (error) {
     console.error(error);
@@ -43,15 +41,17 @@ index.get('/download/:id.pdf', async (req, res) => {
 index.get('/', async (req, res) => {
   try {
     const searchQuery = req.query.search || '';
-    const url = `${config.host}/c/${config.firma}/faktura-vydana.json?detail=full&start=0&q=${searchQuery}`;
-    const response = await axios.get(url, {
+    const limit = req.query.limit || 0;
+    const start = req.query.start || 0;
+    
+    const response = await axios.get(`${config.host}/c/${config.firma}/faktura-vydana.json?detail=full&limit=${limit}&start=${start}&q=${searchQuery}&add-row-count=true`, {
       auth: {
         username: config.username,
         password: config.password,
       },
     });
-    const jsonData = response.data;
-    res.json(jsonData);
+
+    res.json(response.data);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal server error' });

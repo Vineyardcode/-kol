@@ -4,6 +4,14 @@
   text-align: center;
 }
 
+.active {
+  background-color: #9d9d9d9a;
+}
+
+button:hover {
+  cursor: pointer;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;

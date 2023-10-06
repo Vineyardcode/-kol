@@ -59,6 +59,8 @@ function App() {
     setPage(newPage);
   };
 
+  console.log(data[0]);
+
   return (
     <div className='App'>
 
@@ -125,7 +127,11 @@ function App() {
                   <td>{item.cisObj}</td>
                   <td>{item.nazevPolozky}</td>
                   <td>{item.sumCelkem},-{item.mena.replace('code:', '')}</td>
-                  <td>{item.faktura}</td>
+                  <td>                  
+                  {item.typDokl === 'code:FAKTURA' ? (
+                    item["rada@showAs"]
+                  ) : (<p>&times;</p>)}
+                  </td>
                   <td>
                   {item.typDokl === 'code:FAKTURA' && (
                     <button onClick={() => handleDownload(item.id)}>Download</button>
